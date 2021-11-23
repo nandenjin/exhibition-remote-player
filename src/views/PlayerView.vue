@@ -56,7 +56,6 @@ import { computed, onMounted, onUnmounted, ref } from "vue";
 import { useRoute } from "vue-router";
 import Player from "../components/Player.vue";
 import { useStore } from "vuex";
-import { useMeta } from "vue-meta";
 
 const route = useRoute();
 const store = useStore();
@@ -74,10 +73,6 @@ const currentTime = ref<number>();
 const videoIdInput = ref<string>("");
 
 const nsRef = dbRef(db, `namespaces/${namespace}`);
-
-useMeta({
-  title: `${namespace} - Exhibition Remote Player`,
-});
 
 // Set trigger from DB
 onValue(nsRef, (snapshot) => {
