@@ -5,7 +5,7 @@
     "namespaces": {
       "$namespace": {
         ".read": true,
-        ".write": false
+        ".write": "auth.uid == data.child('owner').val()"
       }
     }
   }
