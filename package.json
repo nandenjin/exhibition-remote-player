@@ -1,5 +1,5 @@
 {
-  "name": "exhibition-remote-player",
+  "name": "@nandenjin/exhibition-remote-player",
   "version": "0.0.0",
   "scripts": {
     "dev": "vite",
@@ -9,6 +9,7 @@
   "dependencies": {
     "firebase": "^9.5.0",
     "vue": "^3.2.16",
+    "vue-meta": "^3.0.0-alpha.9",
     "vue-router": "4",
     "vuex": "^4"
   },

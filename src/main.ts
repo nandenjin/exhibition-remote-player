@@ -3,6 +3,7 @@ import { createRouter, createWebHistory } from "vue-router";
 import { initializeApp } from "firebase/app";
 import App from "./App.vue";
 import { store } from "./store";
+import { createMetaManager } from "vue-meta";
 
 initializeApp({
   databaseURL: "https://exhibition-remote-player.firebaseio.com",
@@ -20,4 +21,4 @@ const router = createRouter({
   ],
 });
 
-createApp(App).use(router).use(store).mount("#app");
+createApp(App).use(router).use(store).use(createMetaManager()).mount("#app");
