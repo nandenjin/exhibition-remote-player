@@ -1,0 +1,18 @@
+name: onPush
+on: [push, pull_request]
+jobs:
+  build_and_deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: "16"
+      - run: yarn install --frozen-lockfile
+      - run: yarn build
+      - uses: FirebaseExtended/action-hosting-deploy@v0
+        if: github.ref == 'refs/heads/dev'
+        with:
+          repoToken: "${{ secrets.GITHUB_TOKEN }}"
+          firebaseServiceAccount: "${{ secrets.FIREBASE_SERVICE_ACCOUNT_EXHIBITION_REMOTE_PLAYER }}"
+          projectId: exhibition-remote-player
