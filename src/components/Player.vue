@@ -69,6 +69,7 @@ onMounted(() => {
     () => props.videoId,
     () => {
       playerRef.value?.loadVideoById?.(props.videoId, props.position || 0);
+      playerRef.value?.playVideo?.();
     }
   );
 
