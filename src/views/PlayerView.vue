@@ -68,38 +68,12 @@ const owner = ref<string>();
 const isAdmin = computed(() => store.state.uid === owner.value);
 const videoId = ref<string>("c21zSdiyW6o");
 const position = ref<number>();
+const timeOffset = ref<number>(0);
 
 const currentTime = ref<number>();
 const videoIdInput = ref<string>("");
 
 const nsRef = dbRef(db, `namespaces/${namespace}`);
-
-// Set trigger from DB
-onValue(nsRef, (snapshot) => {
-  if (!snapshot.exists()) {
-    error.value = `Namespace "${namespace}" is not found`;
-    return;
-  }
-
-  console.info("DB updated");
-
-  const {
-    owner: o,
-    videoId: vid,
-    position: pos,
-    timeOrigin: ot,
-  }: {
-    owner: string;
-    videoId: string;
-    position: number;
-    timeOrigin: number;
-  } = snapshot.val();
-  owner.value = o;
-  videoId.value = vid;
-  position.value = pos + (Date.now() - ot) / 1000 || 0;
-
-  console.log(`position=${position.value}`);
-});
 
 const width = ref<number>(640);
 const height = ref<number>(360);
@@ -117,9 +91,50 @@ const onResize = () => {
   }, 300);
 };
 
-onMounted(() => {
+onMounted(async () => {
   window.addEventListener("resize", onResize);
   onResize();
+
+  // Compute offset of local clock.
+  const res = await fetch("https://worldtimeapi.org/api/ip");
+  if (res.ok) {
+    const { unixtime } = await res.json();
+    const offset = new Date(unixtime * 1000).getTime() - Date.now();
+    timeOffset.value = offset;
+    console.log(`offset=${offset}`);
+    console.log(
+      `Time with offset: ${new Date(Date.now() + offset).toLocaleString()}`
+    );
+  } else {
+    console.error("Failed to fetch network clock");
+  }
+
+  // Set trigger from DB
+  onValue(nsRef, (snapshot) => {
+    if (!snapshot.exists()) {
+      error.value = `Namespace "${namespace}" is not found`;
+      return;
+    }
+
+    console.info("DB updated");
+
+    const {
+      owner: o,
+      videoId: vid,
+      position: pos,
+      timeOrigin: ot,
+    }: {
+      owner: string;
+      videoId: string;
+      position: number;
+      timeOrigin: number;
+    } = snapshot.val();
+    owner.value = o;
+    videoId.value = vid;
+    position.value = pos + (Date.now() + timeOffset.value - ot) / 1000 || 0;
+
+    console.log(`position=${position.value}`);
+  });
 });
 
 onUnmounted(() => {
